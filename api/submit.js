@@ -3,10 +3,13 @@ export default async function handler(req, res) {
     return res.status(405).send('Method Not Allowed');
   }
 
-  const data = req.body;
+  const buffers = [];
+  for await (const chunk of req) {
+    buffers.push(chunk);
+  }
 
-  // You can add email notification, logging, or GitHub commit logic here.
-  console.log('Received contributor submission:', data);
+  const rawBody = Buffer.concat(buffers).toString();
+  console.log('💬 New Submission Received:', rawBody);
 
-  return res.status(200).json({ success: true, message: 'Submission received.' });
+  res.status(200).send('Submission received');
 }
